@@ -41,7 +41,7 @@ class GPIOOut : public GPIO{
 
 class GPIOInt : public GPIO{
     public:
-        bool init(int cChip, int cPin, int cDefault = PP_HIGH;        
+        bool init(int cChip, int cPin, int cDefault = PP_HIGH);        
         int poll(int cTimeOut = -1);
 };
 
