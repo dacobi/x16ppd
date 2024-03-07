@@ -19,8 +19,8 @@ enum {
 
 enum{
     PPDS_WAITING,
-
-
+    PPDS_REVICE, 
+    PPDS_SEND
 } ppd_state;
 
 class GPIO{
@@ -49,6 +49,7 @@ class PPort{
     public:
         int mBus = 1;
         int mDevAddr = 0x20;
+        int mMode = PP_DISABLED;
         vector<unsigned char> mInBuf;
         vector<unsigned char> mOutBuf;
         GPIOOut mOutPin;
@@ -58,8 +59,8 @@ class PPort{
         bool init(int cBus = 1, int cDevAddr = 0x20, int cOutChip = 3, int cOutPin = 17, int cInChip = 3, int cInPin = 20, int cCA2Chip = 1, int CA2Pin = 17, int cCA1Chip = 1, int cCA1Pin = 25);
         unsigned char read();
         void write(unsigned char);
-        void read(int cBytes);
-        void write(int cBytes);
+        void read(vector<unsigned char> cInBuf, int cBytes);
+        void write(vector<unsigned char> cOutBuf, int cBytes);
         void setMode(int cMode);   
         void changeMode(int cMode);
 };
