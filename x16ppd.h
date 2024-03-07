@@ -19,7 +19,7 @@ enum {
 
 enum{
     PPDS_WAITING,
-    
+
 
 } ppd_state;
 
@@ -28,20 +28,21 @@ class GPIO{
     int mChip;
     int mPin;
     int mValue;
+    int mDefault = PP_HIGH;
 };
 
 class GPIOOut : public GPIO{
     public:
-        bool init(int cChip, int cPin, int cDefailt = PP_HIGH);
+        bool init(int cChip, int cPin, int cDefault = PP_HIGH);
         void setValue(int cVal);
         void pulse();
-        int mDefault = PP_HIGH;
+        
 };
 
 class GPIOInt : public GPIO{
     public:
-        bool init(int cChip, int cPin, int cDefailt = PP_LOW);        
-        void poll(int cTimeOut = -1);
+        bool init(int cChip, int cPin, int cDefault = PP_HIGH;        
+        int poll(int cTimeOut = -1);
 };
 
 class PPort{
@@ -58,7 +59,9 @@ class PPort{
         unsigned char read();
         void write(unsigned char);
         void read(int cBytes);
-        void write(int cBytes);        
+        void write(int cBytes);
+        void setMode(int cMode);   
+        void changeMode(int cMode);
 };
 
 class PPDaemon {
