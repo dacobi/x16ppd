@@ -18,9 +18,19 @@ enum {
 } pp_mode;
 
 enum{
+    PPDM_IDLE,
+    PPDM_RESET,
+    PPDM_PING, 
+    PPDM_WGET
+} ppd_mode;
+
+
+enum{
     PPDS_WAITING,
     PPDS_REVICE, 
-    PPDS_SEND
+    PPDS_SEND,
+    PPDS_REVICEBYTES, 
+    PPDS_SENDBYTES
 } ppd_state;
 
 class GPIO{
@@ -41,8 +51,9 @@ class GPIOOut : public GPIO{
 
 class GPIOInt : public GPIO{
     public:
-        bool init(int cChip, int cPin, int cDefault = PP_HIGH);        
-        int poll(int cTimeOut = -1);
+        bool bActiveLow = true;
+        bool init(int cChip, int cPin, bool cActiveLow = true);        
+        int poll(int cTimeOut = -1);        
 };
 
 class PPort{
@@ -50,8 +61,6 @@ class PPort{
         int mBus = 1;
         int mDevAddr = 0x20;
         int mMode = PP_DISABLED;
-        vector<unsigned char> mInBuf;
-        vector<unsigned char> mOutBuf;
         GPIOOut mOutPin;
         GPIOOut mInPin;
         GPIOOut mCA1;
@@ -59,18 +68,23 @@ class PPort{
         bool init(int cBus = 1, int cDevAddr = 0x20, int cOutChip = 3, int cOutPin = 17, int cInChip = 3, int cInPin = 20, int cCA2Chip = 1, int CA2Pin = 17, int cCA1Chip = 1, int cCA1Pin = 25);
         unsigned char read();
         void write(unsigned char);
-        void read(vector<unsigned char> cInBuf, int cBytes);
-        void write(vector<unsigned char> cOutBuf, int cBytes);
+        void read(vector<unsigned char> &cInBuf, int cBytes);
+        void write(vector<unsigned char> &cOutBuf, int cBytes);
         void setMode(int cMode);   
         void changeMode(int cMode);
 };
 
 class PPDaemon {
     PPort mPort;
+    int mMode = PPDM_IDLE;
+    int mState = PPDS_WAITING;
+    vector<unsigned char> mInBuf;
+    vector<unsigned char> mOutBuf;
     bool init();
     void send(unsigned char cData);
     unsigned char recive();
-    void send(vector<unsigned char> &cData);
-    vector<unsigned char> cData recive(int cBytes);
+    void send(int cBytes);
+    void recive(int cBytes);
+    void handleEvent(int cEvent);
 };
 
