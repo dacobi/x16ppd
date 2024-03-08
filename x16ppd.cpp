@@ -95,7 +95,30 @@ void GPIOInt::close(){
 
 }      
 
-bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip, int cInPin, int cCA2Chip, int CA2Pin, int cCA1Chip, int cCA1Pin){
+bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip, int cInPin, int cCA2Chip, int cCA2Pin, int cCA1Chip, int cCA1Pin){
+
+    if(mOutPin.init(cOutChip, cOutPin) == -1){
+        return true;
+    }
+
+    if(mInPin.init(cInChip, cInPin) == -1){
+        return true;
+    }
+
+    if(mCA1.init(cCA1Chip cCA1Pin) == -1){
+        return true;
+    }
+
+    if(mCA2.init(cCA2Chip, cCA2Pin) == -1){
+        return true;
+    }
+
+    mBus = cBus;
+    mDevAddr = cDevAddr;
+
+    if(rc_i2c_init(mBus, mDevAddr) == -1){
+        return true;
+    }
 
 }
 

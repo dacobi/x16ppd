@@ -54,7 +54,7 @@ class GPIO{
         int mPin;
         int mValue;
         int mDefault = PP_HIGH;
-        virtual void close();
+        virtual void close(){};
 };
 
 class GPIOOut : public GPIO{
@@ -84,7 +84,7 @@ class PPort{
         GPIOOut mInPin;
         GPIOOut mCA1;
         GPIOInt mCA2;
-        bool init(int cBus = 1, int cDevAddr = 0x20, int cOutChip = 3, int cOutPin = 17, int cInChip = 3, int cInPin = 20, int cCA2Chip = 1, int CA2Pin = 17, int cCA1Chip = 1, int cCA1Pin = 25);
+        bool init(int cBus = 1, int cDevAddr = 0x20, int cOutChip = 3, int cOutPin = 17, int cInChip = 3, int cInPin = 20, int cCA2Chip = 1, int cCA2Pin = 17, int cCA1Chip = 1, int cCA1Pin = 25);
         unsigned char read();
         void write(unsigned char);
         void read(vector<unsigned char> &cInBuf, int cBytes);
