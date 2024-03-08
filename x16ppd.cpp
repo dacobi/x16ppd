@@ -123,6 +123,12 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
 }
 
 void PPort::close(){
+    
+    mOutPin.close();
+    mInPin.close();
+    mCA2.close();
+    mCA1.close();
+
     rc_i2c_close(mBus);
 }
 
