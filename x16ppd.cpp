@@ -122,6 +122,10 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
 
 }
 
+void PPort::close(){
+    rc_i2c_close(mBus);
+}
+
 unsigned char PPort::read(){
 
 }

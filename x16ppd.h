@@ -91,6 +91,7 @@ class PPort{
         void write(vector<unsigned char> &cOutBuf, int cBytes);
         void setMode(int cMode);   
         void changeMode(int cMode);
+        void close();
 };
 
 class PPCmd{
