@@ -141,5 +141,6 @@ class PPDaemon {
         void send(int cBytes);
         void recive(int cBytes);
         void handleEvent(int cEvent);
+        int run();
 };
 
