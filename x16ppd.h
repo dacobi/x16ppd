@@ -18,7 +18,7 @@ enum{
 
 enum {
     PP_DISABLED,
-    PP_INTUT, 
+    PP_INPUT, 
     PP_OUTPUT
 } pp_mode;
 
@@ -59,7 +59,6 @@ class GPIO{
 
 class GPIOOut : public GPIO{
     public:
-        ~GPIOOut();
         bool init(int cChip, int cPin, int cDefault = PP_HIGH);
         void setValue(int cVal);
         void pulse();
@@ -68,7 +67,6 @@ class GPIOOut : public GPIO{
 
 class GPIOInt : public GPIO{
     public:
-        ~GPIOInt();
         bool bActiveLow = true;
         bool init(int cChip, int cPin, bool cActiveLow = true);        
         int poll(int cTimeOut = -1);        
@@ -86,7 +84,7 @@ class PPort{
         GPIOInt mCA2;
         bool init(int cBus = 1, int cDevAddr = 0x20, int cOutChip = 3, int cOutPin = 17, int cInChip = 3, int cInPin = 20, int cCA2Chip = 1, int cCA2Pin = 17, int cCA1Chip = 1, int cCA1Pin = 25);
         unsigned char read();
-        void write(unsigned char);
+        void write(unsigned char cByte);
         void read(vector<unsigned char> &cInBuf, int cBytes);
         void write(vector<unsigned char> &cOutBuf, int cBytes);
         void setMode(int cMode);   

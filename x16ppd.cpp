@@ -1,9 +1,5 @@
 #include "x16ppd.h"
 
-GPIOOut::~GPIOOut(){
-    close(); 
-}
-
 bool GPIOOut::init(int cChip, int cPin, int cDefault){
     
     mChip = cChip;
@@ -47,11 +43,6 @@ void GPIOOut::close(){
     rc_gpio_cleanup(mChip, mPin)
 }
 
-
-GPIOInt::~GPIOInt(){
-    close(); 
-}
-
 bool GPIOInt::init(int cChip, int cPin, bool cActiveLow){
 
     mChip = cChip;
@@ -85,12 +76,6 @@ int GPIOInt::poll(int cTimeOut){
 
 void GPIOInt::close(){
 
-    if(bActiveLow){
-        rc_gpio_set_value(mChip, mPin, PP_HIGH);
-    } else {
-        rc_gpio_set_value(mChip, mPin, PP_LOW);
-    }
-
     rc_gpio_cleanup(mChip, mPin)
 
 }      
@@ -113,6 +98,8 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
         return true;
     }
 
+    setMode(PP_DISABLED);
+
     mBus = cBus;
     mDevAddr = cDevAddr;
 
@@ -120,10 +107,15 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
         return true;
     }
 
+    setMode(PP_INPUT);
+
+    return false;
 }
 
 void PPort::close(){
-    
+
+    setMode(PP_DISABLED);
+
     mOutPin.close();
     mInPin.close();
     mCA2.close();
@@ -134,10 +126,29 @@ void PPort::close(){
 
 unsigned char PPort::read(){
 
+    unsigned char mRead[2];
+
+    int retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
+
+    if(retval == -1){
+        throw std::runtime_error("I2C IO Error!");
+    }
+
+    return mRead[1];
 }
 
-void PPort::write(unsigned char){
+void PPort::write(unsigned char cByte){
 
+    unsigned char mWrite[2];
+
+    mWrite[0] = cByte;
+    mWrite[1] = 0xFF;
+
+    int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
+
+    if(retval == -1){
+        throw std::runtime_error("I2C IO Error!");
+    }
 }
 
 void PPort::read(vector<unsigned char> &cInBuf, int cBytes){
@@ -150,13 +161,49 @@ void PPort::write(vector<unsigned char> &cOutBuf, int cBytes){
 
 void PPort::setMode(int cMode){
 
+    mMode = cMode;
+
+    mOutPin.setValue(PP_HIGH);
+    mInPin.setValue(PP_HIGH);
+
+    if(mMode == PP_INPUT){
+        mInPin.setValue(PP_LOW);
+        return;
+    }
+
+    if(mMode == PP_OUTPUT){
+        mOutPin.setValue(PP_LOW);
+        return;
+    }
 }
 
 void PPort::changeMode(int cMode){
 
+    if(mMode == cMode){
+        return;
+    }
+
+    mMode = cMode;
+
+    mOutPin.setValue(PP_HIGH);
+    mInPin.setValue(PP_HIGH);
+
+    if(mMode == PP_INPUT){
+        mInPin.setValue(PP_LOW);
+        return;
+    }
+
+    if(mMode == PP_OUTPUT){
+        mOutPin.setValue(PP_LOW);
+        return;
+    }
 }
      
 bool PPDaemon::init(){
+
+    if(mPort.init()){
+        return true;
+    }
 
 }
 
