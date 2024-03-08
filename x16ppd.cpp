@@ -105,7 +105,7 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
         return true;
     }
 
-    if(mCA1.init(cCA1Chip cCA1Pin) == -1){
+    if(mCA1.init(cCA1Chip, cCA1Pin) == -1){
         return true;
     }
 
