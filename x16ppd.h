@@ -9,7 +9,8 @@
 #include <string>
 #include <array>
 #include <rc/i2c.h>
-#include <rc/gpio.h> 
+#include <rc/gpio.h>
+#include "pstream.h"
 
 enum{
     PP_LOW,
@@ -22,7 +23,18 @@ enum {
     PP_OUTPUT
 } pp_mode;
 
+enum {
+    PP_IDLE,
+    PP_WAITREADY, 
+    PP_READDATA,
+    PP_SENDTAKEN,    
+    PP_WRITEDATA,
+    PP_SENDREADY,
+    PP_WAITTAKEN
+} pp_state;
+
 enum{
+    PPDM_INIT,
     PPDM_IDLE,
     PPDM_HOST,
     PPDM_PING, 
@@ -30,13 +42,16 @@ enum{
 } ppd_mode;
 
 enum{
-    PPDS_WAIT,
-    PPDS_WAITCMD,
+    PPDS_IDLE,
+    PPDS_WAITB,
+    PPDS_WAITCMDB,
+    PPDS_WAITCMDCNK,
     PPDS_WAITCNK,
-    PPDS_REVICE, 
-    PPDS_REVICECMD, 
+    PPDS_REVICEB,     
     PPDS_REVICECNK, 
-    PPDS_SEND,    
+    PPDS_REVICECMDB, 
+    PPDS_REVICECMDCNK, 
+    PPDS_SENDB,    
     PPDS_SENDCNK
 } ppd_state;
 
@@ -48,23 +63,24 @@ enum{
     PPDR_MORE = 1
 } pdd_revtal;
 
+enum{
+    PPDERR_NONE,
+    PPDERR_TIMEOUT_IO,
+    PPDERR_TIMEOUT_PROG,
+    PPDERR_CMD_ERROR,
+    PPDERR_CMD_UNKNOWN,
+    PPDERR_FATAL_IO,
+    PPDERR_UNKNOWN
+} pdd_error;
+
+
 class GPIO{
     public:
         int mChip;
         int mPin;
         int mValue;
         int mDefault = PP_HIGH;
-        virtual void close(){};
-};
-
-class GPIOOut : public GPIO{
-    public:
-        bool init(int cChip, int cPin, int cDefault = PP_HIGH);
-        void setValue(int cVal);
-        void pulse();
-        virtual void close();        
-};
-
+        redi::pstream mProcess;
 class GPIOInt : public GPIO{
     public:
         bool bActiveLow = true;
@@ -101,25 +117,31 @@ class PPCmd{
         virtual void run();
 };
 
+class PPCmdStr : public PPCmd{
+    public:
+      virtual void run();
+};
+
 class PPCmdBin : public PPCmd{
     public:
       virtual void run();
 };
 
-class PPCmdHostStat : public PPCmd{
+
+class PPCmdHostStat : public PPCmdStr{
     public:
       virtual void run();
 };
 
 
-class PPCmdGetRetVal : public PPCmd{
+class PPCmdGetRetVal : public PPCmdStr{
     public:
         virtual int check();
         virtual void run();
 };
 
 
-class PPCmdCheckRetVal : public PPCmd{
+class PPCmdCheckRetVal : public PPCmdBin{
     public:
         PPCmdGetRetVal mCmdCheck;        
         virtual void run();
@@ -130,7 +152,9 @@ class PPDaemon {
     public:
         PPort mPort;
         int mMode = PPDM_IDLE;
-        int mState = PPDS_WAITCMD;
+        int mState = PPDS_IDLE;
+        int mError = PPDERR_NONE;
+        redi::pstream mProcess;
         std::vector<unsigned char> mInBuf;
         std::vector<unsigned char> mOutBuf;
         bool init();
@@ -141,5 +165,7 @@ class PPDaemon {
         void recive(int cBytes);
         void handleEvent(int cEvent);
         int run();
+        void close();
 };
 
+PPDaemon mPPd;

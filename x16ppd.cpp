@@ -234,3 +234,19 @@ void PPDaemon::handleEvent(int cEvent){
 int PPDaemon::run(){
 
 }
+
+
+int main(int argc, char *argv[]){
+
+    int retval; 
+
+    if(mPPd.init()){
+        retval = 1;
+    } else {
+        retval = mPPd.run();
+    }
+
+    mPPd.close();
+
+    return retval;
+}
