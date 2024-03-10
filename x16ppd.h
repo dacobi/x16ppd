@@ -114,6 +114,7 @@ class PPCmd{
         std::vector<std::string> mArgs;
         virtual int init(std::string cCmd, int cArgNum);
         void setArg(int cArgNum, std::string cArg);
+        std::string getCmd();
         virtual void run();
 };
 
