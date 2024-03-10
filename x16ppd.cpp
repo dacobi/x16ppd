@@ -205,6 +205,7 @@ bool PPDaemon::init(){
         return true;
     }
 
+    return false;
 }
 
 void PPDaemon::send(unsigned char cData){

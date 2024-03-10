@@ -94,6 +94,7 @@ class PPort{
         int mBus = 1;
         int mDevAddr = 0x20;
         int mMode = PP_DISABLED;
+        int mState = PP_IDLE;
         GPIOOut mOutPin;
         GPIOOut mInPin;
         GPIOOut mCA1;
