@@ -6,7 +6,7 @@ bool GPIOOut::init(int cChip, int cPin, int cDefault){
     mPin = cPin;
     mDefault = cDefault;
 
-    if( rc_gpio_init(mChip, mPin, GPIOHANDLE_REQUEST_OUTPUT) != 0 ){
+    if( rc_gpio_init(mChip, mPin, GPIOHANDLE_REQUEST_OUTPUT) == PP_ERROR ){
         return true;
     }
 
@@ -51,11 +51,11 @@ bool GPIOInt::init(int cChip, int cPin, bool cActiveLow){
     bActiveLow = cActiveLow;
 
     if(bActiveLow){
-        if( rc_gpio_init_event(mChip, mPin, GPIOHANDLE_REQUEST_ACTIVE_LOW, RC_GPIOEVENT_FALLING_EDGE) == -1){
+        if( rc_gpio_init_event(mChip, mPin, GPIOHANDLE_REQUEST_ACTIVE_LOW, RC_GPIOEVENT_FALLING_EDGE) == PP_ERROR){
             return true;
         }
     } else {
-        if( rc_gpio_init_event(mChip, mPin, 0, RC_GPIOEVENT_RISING_EDGE) == -1){
+        if( rc_gpio_init_event(mChip, mPin, 0, RC_GPIOEVENT_RISING_EDGE) == PP_ERROR){
             return true;        
         }
     }
@@ -82,19 +82,19 @@ void GPIOInt::close(){
 
 bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip, int cInPin, int cCA2Chip, int cCA2Pin, int cCA1Chip, int cCA1Pin){
 
-    if(mOutPin.init(cOutChip, cOutPin) == -1){
+    if(mOutPin.init(cOutChip, cOutPin) == PP_ERROR){
         return true;
     }
 
-    if(mInPin.init(cInChip, cInPin) == -1){
+    if(mInPin.init(cInChip, cInPin) == PP_ERROR){
         return true;
     }
 
-    if(mCA1.init(cCA1Chip, cCA1Pin) == -1){
+    if(mCA1.init(cCA1Chip, cCA1Pin) == PP_ERROR){
         return true;
     }
 
-    if(mCA2.init(cCA2Chip, cCA2Pin) == -1){
+    if(mCA2.init(cCA2Chip, cCA2Pin) == PP_ERROR){
         return true;
     }
 
@@ -103,7 +103,7 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
     mBus = cBus;
     mDevAddr = cDevAddr;
 
-    if(rc_i2c_init(mBus, mDevAddr) == -1){
+    if(rc_i2c_init(mBus, mDevAddr) == PP_ERROR){
         return true;
     }
 
@@ -130,8 +130,8 @@ unsigned char PPort::read(){
 
     int retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
 
-    if(retval == -1){
-        throw std::runtime_error("I2C IO Error!");
+    if(retval == PP_ERROR){
+        mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");        
     }
 
     return mRead[1];
@@ -146,17 +146,9 @@ void PPort::write(unsigned char cByte){
 
     int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
 
-    if(retval == -1){
-        throw std::runtime_error("I2C IO Error!");
+    if(retval == PP_ERROR){
+        mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");
     }
-}
-
-void PPort::read(vector<unsigned char> &cInBuf, int cBytes){
-
-}
-
-void PPort::write(vector<unsigned char> &cOutBuf, int cBytes){
-
 }
 
 void PPort::setMode(int cMode){
@@ -165,6 +157,8 @@ void PPort::setMode(int cMode){
 
     mOutPin.setValue(PP_HIGH);
     mInPin.setValue(PP_HIGH);
+
+    write(0x00);
 
     if(mMode == PP_INPUT){
         mInPin.setValue(PP_LOW);
@@ -175,6 +169,8 @@ void PPort::setMode(int cMode){
         mOutPin.setValue(PP_LOW);
         return;
     }
+
+    return;
 }
 
 void PPort::changeMode(int cMode){
@@ -242,10 +238,13 @@ int main(int argc, char *argv[]){
     int retval; 
 
     if(mPPd.init()){
-        retval = 1;
-    } else {
-        retval = mPPd.run();
+         std::cout << "PPort: Init Error!" << std::endl;
+         return 1;
     }
+
+    retval = mPPd.run();
+    
+    std::cout << "Shutdown..." << std::endl;
 
     mPPd.close();
 

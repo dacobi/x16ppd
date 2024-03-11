@@ -13,8 +13,9 @@
 #include "pstream.h"
 
 enum{
-    PP_LOW,
-    PP_HIGH 
+    PP_ERROR=-1,
+    PP_LOW=0,
+    PP_HIGH=1 
 } pp_values;
 
 enum {
@@ -36,19 +37,22 @@ enum {
 enum{
     PPDM_INIT,
     PPDM_IDLE,
+    PPDM_HOSTARGS,
     PPDM_HOST,
+    PPDM_PINGARGS, 
     PPDM_PING, 
+    PPDM_WGETARGS,
     PPDM_WGET
 } ppd_mode;
 
 enum{
     PPDS_IDLE,
     PPDS_WAITB,
-    PPDS_WAITCMDB,
+    PPDS_WAITCNK,    
+    PPDS_WAITCMDB,        
     PPDS_WAITCMDCNK,
-    PPDS_WAITCNK,
-    PPDS_REVICEB,     
-    PPDS_REVICECNK, 
+    PPDS_REVICEB,      
+    PPDS_REVICECNK,   
     PPDS_REVICECMDB, 
     PPDS_REVICECMDCNK, 
     PPDS_SENDB,    
@@ -64,6 +68,13 @@ enum{
 } pdd_revtal;
 
 enum{
+    PPDVAL_NONE,
+    PPDVAL_TOIO,
+    PPDVAL_TOPRG,
+    PPDVAL_ROOT
+} ppd_values;
+
+enum{
     PPDERR_NONE,
     PPDERR_TIMEOUT_IO,
     PPDERR_TIMEOUT_PROG,
@@ -73,6 +84,26 @@ enum{
     PPDERR_UNKNOWN
 } pdd_error;
 
+enum {
+    PPDE_NONE,
+    PPDE_RESET,
+    PPDE_RESTART,
+    PPDE_SHUTDOWN
+} ppd_event;
+
+enum{
+    PPDCMD_HOST,
+    PPDCMD_PING,
+    PPDCMD_WGET
+} ppd_cmds;
+
+enum{
+    HOST_RESET,
+    HOST_RESTART,
+    HOST_STATUS,
+    HOST_SAVE,
+    HOST_SHUTDOWN
+} host_args;
 
 class GPIO{
     public:
@@ -80,7 +111,8 @@ class GPIO{
         int mPin;
         int mValue;
         int mDefault = PP_HIGH;
-        redi::pstream mProcess;
+};
+
 class GPIOInt : public GPIO{
     public:
         bool bActiveLow = true;
@@ -95,17 +127,22 @@ class PPort{
         int mDevAddr = 0x20;
         int mMode = PP_DISABLED;
         int mState = PP_IDLE;
+        unsigned char mOutData;
+        unsigned char mInData;
         GPIOOut mOutPin;
         GPIOOut mInPin;
         GPIOOut mCA1;
         GPIOInt mCA2;
         bool init(int cBus = 1, int cDevAddr = 0x20, int cOutChip = 3, int cOutPin = 17, int cInChip = 3, int cInPin = 20, int cCA2Chip = 1, int cCA2Pin = 17, int cCA1Chip = 1, int cCA1Pin = 25);
         unsigned char read();
-        void write(unsigned char cByte);
-        void read(vector<unsigned char> &cInBuf, int cBytes);
-        void write(vector<unsigned char> &cOutBuf, int cBytes);
-        void setMode(int cMode);   
-        void changeMode(int cMode);
+        void write(unsigned char cByte);        
+        unsigned char recive();
+        void send(unsigned char cByte);        
+        void setMode(int cMode);  
+        void setState(int cState); 
+        void changeMode(int cMode);        
+        void handleState();
+        void handleState(int cState);
         void close();
 };
 
@@ -119,33 +156,36 @@ class PPCmd{
         virtual void run();
 };
 
-class PPCmdStr : public PPCmd{
-    public:
-      virtual void run();
-};
-
-class PPCmdBin : public PPCmd{
-    public:
-      virtual void run();
-};
-
-
-class PPCmdHostStat : public PPCmdStr{
-    public:
-      virtual void run();
-};
-
-
-class PPCmdGetRetVal : public PPCmdStr{
+class PPCmdGetRetVal : public PPCmd{
     public:
         virtual int check();
         virtual void run();
 };
 
 
-class PPCmdCheckRetVal : public PPCmdBin{
+class PPCmdCheckRetVal : public PPCmd {
     public:
-        PPCmdGetRetVal mCmdCheck;        
+        PPCmdGetRetVal mCmdCheck;
+};
+
+class PPCmdHostStat : public PPCmd{
+    public:
+        PPCmdHostStat();
+        virtual void run();
+};
+
+class PPCmdPing : public PPCmd{
+    public:
+        PPCmdPing();
+        void setHost(std::string cHost);
+        void setCount(std::string cCount);        
+        virtual void run();
+};
+
+class PPCmdWget : public PPCmdCheckRetVal{
+    public:
+        PPCmdWget();
+        void setURL(std::string cURL);                
         virtual void run();
 };
 
@@ -157,15 +197,24 @@ class PPDaemon {
         int mState = PPDS_IDLE;
         int mError = PPDERR_NONE;
         redi::pstream mProcess;
-        std::vector<unsigned char> mInBuf;
+        unsigned char mOutData;
+        unsigned char mInData;        
         std::vector<unsigned char> mOutBuf;
+        std::vector<unsigned char> mInBuf;        
         bool init();
         void send(unsigned char cData);
         unsigned char recive();
         void send(std::string cStrSend);
         void send(int cBytes);
         void recive(int cBytes);
+        void setMode(int cMode);  
+        void setState(int cState); 
         void handleEvent(int cEvent);
+        void throwError(int cError, std::string cErrMsg);
+        void handleError(std::string cErrMsg);
+        void handleState();
+        void handleState(int cState);
+        int getValue(int cVal);
         int run();
         void close();
 };
