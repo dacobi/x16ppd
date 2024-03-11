@@ -164,7 +164,7 @@ unsigned char PPort::read(){
 
     int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
 
-    int retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
+    retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");        
