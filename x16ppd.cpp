@@ -78,7 +78,7 @@ int GPIOInt::poll(int cTimeOut){
 
 void GPIOInt::close(){
 
-    rc_gpio_cleanup(mChip, mPin)
+    rc_gpio_cleanup(mChip, mPin);
 
 }      
 
