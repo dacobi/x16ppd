@@ -154,6 +154,8 @@ unsigned char PPort::read(){
 
     unsigned char mRead[2];
 
+    write(0x00);
+
     int retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
 
     if(retval == PP_ERROR){
