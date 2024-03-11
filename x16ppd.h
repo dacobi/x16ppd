@@ -8,9 +8,14 @@
 #include <stdexcept>
 #include <string>
 #include <array>
-#include <rc/i2c.h>
-#include <rc/gpio.h>
 #include "pstream.h"
+
+#define NOBONE
+
+#ifndef NOBONE
+    #include <rc/i2c.h>
+    #include <rc/gpio.h>
+#endif
 
 enum{
     PP_ERROR=-1,
@@ -106,6 +111,8 @@ enum{
     HOST_SHUTDOWN
 } host_args;
 
+#ifndef NOBONE
+
 class GPIO{
     public:
         int mChip;
@@ -155,6 +162,26 @@ class PPort{
         void handleState(int cState);
         void close();
 };
+
+#else
+
+class PPort{
+    public:
+        bool init(){return false;};
+        unsigned char read(){return 0x00;};
+        void write(unsigned char cByte){};        
+        unsigned char recive(){return 0x00;};
+        void send(unsigned char cByte){};        
+        void setMode(int cMode){};  
+        void setState(int cState){}; 
+        void changeMode(int cMode){};        
+        void handleState(){};
+        void handleState(int cState){};
+        void close(){};
+};
+
+#endif
+
 
 class PPCmd{
     public:

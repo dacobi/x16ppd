@@ -1,5 +1,7 @@
 #include "x16ppd.h"
 
+#ifndef NOBONE
+
 bool GPIOOut::init(int cChip, int cPin, int cDefault){
     
     mChip = cChip;
@@ -194,6 +196,8 @@ void PPort::changeMode(int cMode){
         return;
     }
 }
+
+#endif
      
 bool PPDaemon::init(){
 
@@ -242,8 +246,8 @@ void PPDaemon::handleState(){
 
     switch (mState)
     {
-    case /* constant-expression */:
-        /* code */
+    case PPDS_WAITCMDB:
+        
         break;
     
     default:
