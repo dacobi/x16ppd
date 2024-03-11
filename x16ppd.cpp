@@ -280,6 +280,12 @@ void PPDaemon::handleState(){
 
 }
 
+void PPDaemon::setMode(int cMode){}
+void PPDaemon::setState(int cState){}
+void PPDaemon::throwError(int cError, std::string cErrMsg){}
+void PPDaemon::handleError(std::string cErrMsg){}
+        
+
 int PPDaemon::run(){
 
     while (bRunning){
