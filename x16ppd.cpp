@@ -157,13 +157,20 @@ unsigned char PPort::read(){
 
     unsigned char mRead[2];
 
+    unsigned char mWrite[2];
+
+    mWrite[0] = 0x0;
+    mWrite[1] = 0x0;
+
+    int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
+
     int retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");        
     }
 
-    std::cout << (int)mRead[0] << " - " << (int)mRead[1] << std::endl;
+    std::cout << (int)mRead[0] << " - " << (int)mRead[1];
 
     return mRead[1];
 }
