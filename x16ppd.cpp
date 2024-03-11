@@ -69,7 +69,7 @@ int GPIOInt::poll(int cTimeOut){
 
     int retval = rc_gpio_poll(mChip, mPin, cTimeOut, NULL);
 
-    if(retval == RC_GPIO_EVENT_TIMEOUT){
+    if(retval == RC_GPIOEVENT_TIMEOUT){
         return 1;
     }
 
