@@ -193,7 +193,7 @@ class PPCmdWget : public PPCmdCheckRetVal{
 class PPDaemon {
     public:
         PPort mPort;
-        int mMode = PPDM_IDLE;
+        int mMode = PPDM_INIT;
         int mState = PPDS_IDLE;
         int mError = PPDERR_NONE;
         redi::pstream mProcess;

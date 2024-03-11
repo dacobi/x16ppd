@@ -201,6 +201,9 @@ bool PPDaemon::init(){
         return true;
     }
 
+    setMode(PPDM_IDLE);
+    setState(PPDS_WAITCMDB);
+
     return false;
 }
 
