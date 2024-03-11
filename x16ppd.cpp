@@ -114,6 +114,30 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
     return false;
 }
 
+void PPort::test_i2c(){
+
+    mBus = 1;
+    mDevAddr = 0x20;
+
+    if(rc_i2c_init(mBus, mDevAddr) == PP_ERROR){
+        std::cout << "ERROR!!!" << std::endl;
+        exit(1);
+    }
+
+    int cCount = 100;
+    int cDel = 1000000;
+
+    while(cCount--){
+        write(0xAA);
+        std::cout "Read: " << (int)read();
+        while(cDel--){}
+        cDel = 1000000;
+        write(0x55);
+        while(cDel--){}
+        cDel = 1000000;
+    }
+}
+
 void PPort::close(){
 
     setMode(PP_DISABLED);
@@ -314,6 +338,7 @@ int PPDaemon::run(){
 
 int main(int argc, char *argv[]){
 
+/*
     int retval; 
 
     if(mPPd.init()){
@@ -328,4 +353,9 @@ int main(int argc, char *argv[]){
     mPPd.close();
 
     return retval;
+*/
+
+    mPPd.mPort.test_i2c();
+
+    return 0;
 }

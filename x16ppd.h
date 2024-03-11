@@ -10,7 +10,7 @@
 #include <array>
 #include "pstream.h"
 
-#define NOBONE
+//#define NOBONE
 
 #ifndef NOBONE
     #include <rc/i2c.h>
@@ -160,6 +160,7 @@ class PPort{
         void changeMode(int cMode);        
         void handleState();
         void handleState(int cState);
+        void test_i2c();
         void close();
 };
 
