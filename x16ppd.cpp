@@ -231,8 +231,80 @@ void PPDaemon::handleEvent(int cEvent){
 
 }
 
+void PPDaemon::handleState(int cState){
+
+    setState(cState);
+
+    handleState();
+}
+
+void PPDaemon::handleState(){
+
+    switch (mState)
+    {
+    case /* constant-expression */:
+        /* code */
+        break;
+    
+    default:
+        break;
+    }
+
+}
+
 int PPDaemon::run(){
 
+    while (bRunning){
+
+        try{
+            switch (mMode)
+            {
+            case PPDM_IDLE :
+                handleState(PPDS_WAITCMDB);
+
+                switch (mInData){
+                    case PPDCMD_HOST:
+                        setMode(PPDM_HOSTARGS);                
+                        break;                
+                    default:
+                        setMode(PPDM_IDLE);                    
+                        break;
+                }
+
+                break;
+
+            case PPDM_HOSTARGS :
+                    handleState(PPDS_REVICECMDB);
+
+                    switch (mInData){
+                        case HOST_RESET:
+                            handleEvent(PPDE_RESET);
+                            break;                
+                        case HOST_STATUS:
+                            handleEvent(PPDE_STATUS);
+                            break;                
+                        default:
+                            setMode(PPDM_IDLE);                    
+                            break;
+                    }
+
+                    break;
+
+            default:
+                break;
+            }
+
+
+
+        } catch(std::exception &e){
+            if(mError == PPDERR_NONE){
+                mError = PPDERR_UNKNOWN;
+            }
+
+            handleError(e.what());
+        }
+
+    }
 }
 
 

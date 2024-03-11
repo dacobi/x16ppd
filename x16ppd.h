@@ -87,6 +87,7 @@ enum{
 enum {
     PPDE_NONE,
     PPDE_RESET,
+    PPDE_STATUS,
     PPDE_RESTART,
     PPDE_SHUTDOWN
 } ppd_event;
@@ -99,9 +100,9 @@ enum{
 
 enum{
     HOST_RESET,
-    HOST_RESTART,
     HOST_STATUS,
     HOST_SAVE,
+    HOST_RESTART,        
     HOST_SHUTDOWN
 } host_args;
 
@@ -200,7 +201,8 @@ class PPDaemon {
         unsigned char mOutData;
         unsigned char mInData;        
         std::vector<unsigned char> mOutBuf;
-        std::vector<unsigned char> mInBuf;        
+        std::vector<unsigned char> mInBuf;
+        bool bRunning = true;
         bool init();
         void send(unsigned char cData);
         unsigned char recive();
