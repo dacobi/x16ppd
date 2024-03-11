@@ -125,16 +125,16 @@ void PPort::test_i2c(){
     }
 
     int cCount = 100;
-    int cDel = 1000000;
+    int cDel = 10000000;
 
     while(cCount--){
         write(0xAA);
-        std::cout << "Read: " << (int)read();
+        std::cout << "Read: " << (int)read() << std::endl;
         while(cDel--){}
-        cDel = 1000000;
+        cDel = 10000000;
         write(0x55);
         while(cDel--){}
-        cDel = 1000000;
+        cDel = 10000000;
     }
 }
 
