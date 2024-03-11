@@ -42,7 +42,7 @@ void GPIOOut::close(){
 
     rc_gpio_set_value(mChip, mPin, mDefault);
 
-    rc_gpio_cleanup(mChip, mPin)
+    rc_gpio_cleanup(mChip, mPin);
 }
 
 bool GPIOInt::init(int cChip, int cPin, bool cActiveLow){
