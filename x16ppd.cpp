@@ -163,7 +163,7 @@ unsigned char PPort::read(){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");        
     }
 
-    std::cout << (int)mRead[0] << " - " (int)mRead[1] << std::endl;
+    std::cout << (int)mRead[0] << " - " << (int)mRead[1] << std::endl;
 
     return mRead[1];
 }
