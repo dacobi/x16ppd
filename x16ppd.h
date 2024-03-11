@@ -114,6 +114,15 @@ class GPIO{
         int mDefault = PP_HIGH;
 };
 
+class GPIOOut : public GPIO{
+    public:        
+        bool init(int cChip, int cPin, int cDefault = PP_HIGH);        
+        void setValue(int cVal);
+        void pulse();
+        virtual void close();        
+};
+
+
 class GPIOInt : public GPIO{
     public:
         bool bActiveLow = true;
