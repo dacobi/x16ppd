@@ -129,9 +129,7 @@ void PPort::test_i2c(){
 
     while(cCount--){
         write(0x00);
-        std::cout << "Read: ";
-        read();
-        std::cout << std::endl;
+        std::cout << "Read: " << (int)read() << std::endl;
         write(0xAA);
         while(cDel--){}
         cDel = 10000000;
@@ -157,22 +155,20 @@ unsigned char PPort::read(){
 
     unsigned char mRead[2];
 
-    unsigned char mWrite[2];
+    //unsigned char mWrite[2];
 
-    mWrite[0] = 0xff;
-    mWrite[1] = 0xff;
+    //mWrite[0] = 0xff;
+    //mWrite[1] = 0xff;
 
-    int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
+    //int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
 
-    retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
+    int retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");        
     }
 
-    std::cout << (int)mRead[0] << " - " << (int)mRead[1];
-
-    return mRead[1];
+    return mRead[0];
 }
 
 void PPort::write(unsigned char cByte){
