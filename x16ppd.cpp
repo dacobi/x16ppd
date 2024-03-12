@@ -151,18 +151,13 @@ unsigned char PPort::read(){
 
     unsigned char mRead[2];
 
-    //unsigned char mWrite[2];
-
-    //mWrite[0] = 0xff;
-    //mWrite[1] = 0xff;
-
-    //int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
-
     int retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");        
     }
+
+    std::cout << "I2C Read: " << (int)mRead[0] << " - " << (int)mRead[1] << std::endl;
 
     return mRead[0];
 }
@@ -188,17 +183,15 @@ void PPort::setMode(int cMode){
     mOutPin.setValue(PP_HIGH);
     mInPin.setValue(PP_HIGH);
 
-    write(0x00);
-
     if(mMode == PP_INPUT){
         mInPin.setValue(PP_LOW);
-        return;
     }
 
     if(mMode == PP_OUTPUT){
         mOutPin.setValue(PP_LOW);
-        return;
     }
+    
+    write(0x00);
 
     return;
 }
