@@ -167,7 +167,7 @@ void PPort::write(unsigned char cByte){
     unsigned char mWrite[2];
 
     mWrite[0] = cByte;
-    mWrite[1] = 0x00;
+    mWrite[1] = 0xff;
 
     int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
 
@@ -183,10 +183,9 @@ void PPort::setMode(int cMode){
     mOutPin.setValue(PP_HIGH);
     mInPin.setValue(PP_HIGH);
 
-    write(0x00);
-
     if(mMode == PP_INPUT){
         mInPin.setValue(PP_LOW);
+        write(0x00);
     }
 
     if(mMode == PP_OUTPUT){
