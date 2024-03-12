@@ -183,6 +183,8 @@ void PPort::setMode(int cMode){
     mOutPin.setValue(PP_HIGH);
     mInPin.setValue(PP_HIGH);
 
+    write(0x00);
+
     if(mMode == PP_INPUT){
         mInPin.setValue(PP_LOW);
     }
@@ -191,8 +193,6 @@ void PPort::setMode(int cMode){
         mOutPin.setValue(PP_LOW);
     }
     
-    write(0x00);
-
     return;
 }
 
