@@ -167,7 +167,7 @@ void PPort::write(unsigned char cByte){
     unsigned char mWrite[2];
 
     mWrite[0] = cByte;
-    mWrite[1] = 0xFF;
+    mWrite[1] = 0x00;
 
     int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
 
