@@ -100,8 +100,6 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
         return true;
     }
 
-    setMode(PP_DISABLED);
-
     mBus = cBus;
     mDevAddr = cDevAddr;
 
@@ -109,7 +107,7 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
         return true;
     }
 
-    setMode(PP_INPUT);
+    setMode(PP_DISABLED);
 
     return false;
 }
