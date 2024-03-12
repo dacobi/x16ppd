@@ -115,11 +115,8 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
 }
 
 void PPort::test_i2c(){
-
-    mBus = 1;
-    mDevAddr = 0x20;
-
-    if(rc_i2c_init(mBus, mDevAddr) == PP_ERROR){
+    
+    if(init()){
         std::cout << "ERROR!!!" << std::endl;
         exit(1);
     }
@@ -128,8 +125,9 @@ void PPort::test_i2c(){
     int cDel = 10000000;
 
     while(cCount--){
-        write(0x00);
+        setMode(PP_INPUT);
         std::cout << "Read: " << (int)read() << std::endl;
+        setMode(PP_OUTPUT);
         write(0xAA);
         while(cDel--){}
         cDel = 10000000;
@@ -213,20 +211,7 @@ void PPort::changeMode(int cMode){
         return;
     }
 
-    mMode = cMode;
-
-    mOutPin.setValue(PP_HIGH);
-    mInPin.setValue(PP_HIGH);
-
-    if(mMode == PP_INPUT){
-        mInPin.setValue(PP_LOW);
-        return;
-    }
-
-    if(mMode == PP_OUTPUT){
-        mOutPin.setValue(PP_LOW);
-        return;
-    }
+    setMode(cMode);
 }
 
 #endif
