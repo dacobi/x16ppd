@@ -18,6 +18,10 @@ void PPDaemon::send(unsigned char cData){
 
 unsigned char PPDaemon::recive(){
 
+    unsigned char cByte = 0x00;
+
+
+    return cByte;
 }
 
 void PPDaemon::send(std::string cStrSend){
@@ -64,6 +68,8 @@ void PPDaemon::handleError(std::string cErrMsg){}
         
 
 int PPDaemon::run(){
+
+    int retval = 0;
 
     while (bRunning){
 
@@ -116,6 +122,8 @@ int PPDaemon::run(){
         }
 
     }
+
+    return retval;
 }
 
 

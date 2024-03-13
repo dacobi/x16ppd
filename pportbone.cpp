@@ -100,6 +100,8 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
         return true;
     }
 
+    setMode(PP_DISABLED);
+
     mBus = cBus;
     mDevAddr = cDevAddr;
 
@@ -107,7 +109,21 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
         return true;
     }
 
-    setMode(PP_DISABLED);
+    unsigned char mInitByte;
+
+    mInitByte = IOCON::BANK;
+
+    if(rc_i2c_write_byte(mBus, MCP23017Reg::IOCON, &mInitByte) == PP_ERROR){
+        return true;
+    }
+
+    mInitByte = 0x00;
+
+    if(rc_i2c_write_byte(mBus, MCP23017Reg::IODIR_B, &mInitByte) == PP_ERROR){
+        return true;
+    }
+
+    setMode(PP_INPUT);
 
     return false;
 }
@@ -149,27 +165,26 @@ void PPort::close(){
 
 unsigned char PPort::read(){
 
-    unsigned char mRead[2];
+    unsigned char mRead;
 
-    int retval = rc_i2c_read_bytes(mBus, mDevAddr, 2, mRead);
+    int retval = rc_i2c_read_byte(mBus, MCP23017Reg::GPIO_A, &mRead);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");        
     }
 
-    std::cout << "I2C Read: " << (int)mRead[0] << " - " << (int)mRead[1] << std::endl;
+    // std::cout << "I2C Read: " << (int)mRead << std::endl;
 
-    return mRead[0];
+    return mRead;
 }
 
 void PPort::write(unsigned char cByte){
 
-    unsigned char mWrite[2];
+    unsigned char mWrite;
 
-    mWrite[0] = cByte;
-    mWrite[1] = 0xff;
-
-    int retval = rc_i2c_write_bytes(mBus, mDevAddr, 2, mWrite);
+    mWrite = cByte;
+    
+    int retval = rc_i2c_write_byte(mBus, MCP23017Reg::GPIO_B, &mWrite);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");
@@ -183,8 +198,7 @@ void PPort::setMode(int cMode){
     mOutPin.setValue(PP_HIGH);
     mInPin.setValue(PP_HIGH);
 
-    if(mMode == PP_INPUT){
-        write(0x00);
+    if(mMode == PP_INPUT){        
         mInPin.setValue(PP_LOW);
     }
 
