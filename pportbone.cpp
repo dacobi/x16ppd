@@ -123,13 +123,13 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
 
     mInitByte = IOCON::BANK;
 
-    if(rc_i2c_write_byte(mBus, MCP23017Reg::IOCON, &mInitByte) == PP_ERROR){
+    if(rc_i2c_write_byte(mBus, MCP23017Reg::IOCON, mInitByte) == PP_ERROR){
         return true;
     }
 
     mInitByte = 0x00;
 
-    if(rc_i2c_write_byte(mBus, MCP23017Reg::IODIR_B, &mInitByte) == PP_ERROR){
+    if(rc_i2c_write_byte(mBus, MCP23017Reg::IODIR_B, mInitByte) == PP_ERROR){
         return true;
     }
 
@@ -191,7 +191,7 @@ void PPort::write(unsigned char cByte){
 
     mWrite = cByte;
     
-    int retval = rc_i2c_write_byte(mBus, MCP23017Reg::GPIO_B, &mWrite);
+    int retval = rc_i2c_write_byte(mBus, MCP23017Reg::GPIO_B, mWrite);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");
