@@ -90,4 +90,3 @@ class PPDaemon {
         void close();
 };
 
-PPDaemon mPPd;

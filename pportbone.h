@@ -3,13 +3,6 @@
 
 #include "pport.h"
 
-#ifdef __arm__
-    #include <rc/i2c.h>
-    #include <rc/gpio.h>
-#else
-    #include "rcdummy.h"
-#endif
-
 enum class IOCON : unsigned char{
     BANK = 0x80
 }; 

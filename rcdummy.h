@@ -1,3 +1,5 @@
+#ifndef __RCDUMMY__
+#define __RCDUMMY__
 
 int rc_i2c_init(int cBus,int cDevAddr){return 0;}
 int rc_i2c_read_byte(int cBus, int cReg, unsigned char *cData){return 0;}
@@ -14,3 +16,5 @@ int rc_gpio_poll(int cChip,int cPin,int cTimeOut, void* cET){return 0;}
 #define RC_GPIOEVENT_FALLING_EDGE 1
 #define RC_GPIOEVENT_RISING_EDGE 1
 #define RC_GPIOEVENT_TIMEOUT 1
+
+#endif

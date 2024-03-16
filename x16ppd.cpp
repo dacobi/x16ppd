@@ -1,5 +1,6 @@
 #include "x16ppd.h"
-     
+PPDaemon mPPd;
+
 bool PPDaemon::init(){
 
     if(mPort.init()){

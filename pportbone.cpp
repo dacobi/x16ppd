@@ -1,6 +1,16 @@
 #include "x16ppd.h"
 #include "pportbone.h"
+
+#ifdef __arm__
+    #include <rc/i2c.h>
+    #include <rc/gpio.h>
+#else
+    #include "rcdummy.h"
+#endif
+
 #include <iostream>
+
+extern PPDaemon mPPd;
 
 bool GPIOOut::init(int cChip, int cPin, int cDefault){
     
