@@ -146,18 +146,15 @@ void PPort::test_i2c(){
     }
 
     int cCount = 100;
-    int cDel = 10000000;
-
-    while(cCount--){
+    
+    while(cCount-- && mPPd.bRunning){
         setMode(PP_INPUT);
         std::cout << "Read: " << (int)read() << std::endl;
         setMode(PP_OUTPUT);
         write(0xAA);
-        while(cDel--){}
-        cDel = 10000000;
+        sleep(1);
         write(0x55);
-        while(cDel--){}
-        cDel = 10000000;
+        sleep(1);
     }
 }
 

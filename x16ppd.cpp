@@ -2,6 +2,29 @@
 
 PPDaemon mPPd;
 
+extern "C" {
+
+void mypidkill(int signum){
+
+    switch (signum){
+
+        case SIGTERM:
+            mPPd.throwError(PPDERR_PIDKILL, "Signal Caught: SIGTERM");
+            break;
+        case SIGKILL:
+            mPPd.throwError(PPDERR_PIDKILL, "Signal Caught: SIGKILL");
+            break;    
+        case SIGINT:
+            mPPd.throwError(PPDERR_PIDKILL, "Signal Caught: SIGINT");
+            break;    
+        default:
+            mPPd.throwError(PPDERR_UNKNOWN, "Signal Caught: UNKNOWN!");
+            break;
+    }
+
+}
+
+}
 bool PPDaemon::init(){
 
     if(mPort.init()){
@@ -65,8 +88,28 @@ void PPDaemon::handleState(){
 
 void PPDaemon::setMode(int cMode){}
 void PPDaemon::setState(int cState){}
-void PPDaemon::throwError(int cError, std::string cErrMsg){}
-void PPDaemon::handleError(std::string cErrMsg){}
+
+void PPDaemon::throwError(int cError, std::string cErrMsg){
+
+    mError = cError;
+    throw std::runtime_error(cErrMsg);
+}
+
+
+void PPDaemon::handleError(std::string cErrMsg){
+    switch (mError)
+    {
+    case PPDERR_PIDKILL:
+        std::cout << "Program Exit: " << cErrMsg << std::endl;
+        bRunning = false;
+        break;    
+    default:
+        std::cout << "UNKNOWN ERROR!!! HARD EXIT: " << cErrMsg << std::endl;
+        exit(1);
+        break;
+    }
+
+}
         
 
 int PPDaemon::run(){
@@ -131,6 +174,13 @@ int PPDaemon::run(){
 
 int main(int argc, char *argv[]){
 
+    struct sigaction action;
+    memset(&action, 0, sizeof(action));
+    action.sa_handler = mypidkill;
+    sigaction(SIGTERM, &action, NULL);
+    sigaction(SIGKILL, &action, NULL);
+    sigaction(SIGINT, &action, NULL);
+
 /*
     int retval; 
 
@@ -147,8 +197,13 @@ int main(int argc, char *argv[]){
 
     return retval;
 */
+    try{
+        mPPd.mPort.test_i2c();
+    } catch(std::exception &e){        
+        mPPd.handleError(e.what());
+    }
 
-    mPPd.mPort.test_i2c();
+    std::cout << "Shutdown..." << std::endl;
 
     return 0;
 }

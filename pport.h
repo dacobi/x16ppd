@@ -70,6 +70,7 @@ enum{
     PPDERR_CMD_ERROR,
     PPDERR_CMD_UNKNOWN,
     PPDERR_FATAL_IO,
+    PPDERR_PIDKILL,
     PPDERR_UNKNOWN
 } pdd_error;
 
