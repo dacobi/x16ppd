@@ -94,19 +94,19 @@ void GPIOInt::close(){
 
 bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip, int cInPin, int cCA2Chip, int cCA2Pin, int cCA1Chip, int cCA1Pin){
 
-    if(mOutPin.init(cOutChip, cOutPin) == PP_ERROR){
+    if(mOutPin.init(cOutChip, cOutPin)){
         return true;
     }
 
-    if(mInPin.init(cInChip, cInPin) == PP_ERROR){
+    if(mInPin.init(cInChip, cInPin)){
         return true;
     }
 
-    if(mCA1.init(cCA1Chip, cCA1Pin) == PP_ERROR){
+    if(mCA1.init(cCA1Chip, cCA1Pin)){
         return true;
     }
 
-    if(mCA2.init(cCA2Chip, cCA2Pin) == PP_ERROR){
+    if(mCA2.init(cCA2Chip, cCA2Pin)){
         return true;
     }
 
@@ -175,7 +175,7 @@ void PPort::close(){
 
 unsigned char PPort::read(){
 
-    unsigned char mRead;
+    unsigned char mRead = 0x0;
 
     int retval = rc_i2c_read_byte(mBus, (unsigned char)(MCP23017Reg::GPIO_A), &mRead);
 
