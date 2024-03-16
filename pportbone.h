@@ -3,11 +3,11 @@
 
 #include "pport.h"
 
-enum class IOCON : unsigned char{
+enum IOCON : unsigned char{
     BANK = 0x80
 }; 
 
-enum class MCP23017Reg : unsigned char{
+enum MCP23017Reg : unsigned char{
     IODIR_A		= 0x00, 		///< Controls the direction of the data I/O for port A.
 	IODIR_B		= 0x10,			///< Controls the direction of the data I/O for port B.
 	IPOL_A		= 0x01,			///< Configures the polarity on the corresponding GPIO_ port bits for port A.
