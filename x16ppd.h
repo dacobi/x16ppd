@@ -10,11 +10,11 @@
 #include <array>
 #include "pstream.h"
 
-#ifdef __arm__
+//#ifdef __arm__
     #include "pportbone.h"
-#else
-    #include "pportlpt.h"
-#endif
+//#else
+//    #include "pportlpt.h"
+//#endif
 
 class PPCmd{
     public:

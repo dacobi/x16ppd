@@ -1,6 +1,6 @@
-#ifdef __arm__
-
+#include "x16ppd.h"
 #include "pportbone.h"
+#include <iostream>
 
 bool GPIOOut::init(int cChip, int cPin, int cDefault){
     
@@ -67,7 +67,7 @@ bool GPIOInt::init(int cChip, int cPin, bool cActiveLow){
 
 int GPIOInt::poll(int cTimeOut){
 
-    int retval = rc_gpio_poll(mChip, mPin, cTimeOut, NULL);
+    int retval = rc_gpio_poll(mChip, mPin, cTimeOut, 0);
 
     if(retval == RC_GPIOEVENT_TIMEOUT){
         return 1;
@@ -111,15 +111,15 @@ bool PPort::init(int cBus, int cDevAddr, int cOutChip, int cOutPin, int cInChip,
 
     unsigned char mInitByte;
 
-    mInitByte = IOCON::BANK;
+    mInitByte = (unsigned char)(IOCON::BANK);
 
-    if(rc_i2c_write_byte(mBus, MCP23017Reg::IOCON, &mInitByte) == PP_ERROR){
+    if(rc_i2c_write_byte(mBus, (unsigned char)(MCP23017Reg::IOCON), &mInitByte) == PP_ERROR){
         return true;
     }
 
     mInitByte = 0x00;
 
-    if(rc_i2c_write_byte(mBus, MCP23017Reg::IODIR_B, &mInitByte) == PP_ERROR){
+    if(rc_i2c_write_byte(mBus, (unsigned char)(MCP23017Reg::IODIR_B), &mInitByte) == PP_ERROR){
         return true;
     }
 
@@ -167,7 +167,7 @@ unsigned char PPort::read(){
 
     unsigned char mRead;
 
-    int retval = rc_i2c_read_byte(mBus, MCP23017Reg::GPIO_A, &mRead);
+    int retval = rc_i2c_read_byte(mBus, (unsigned char)(MCP23017Reg::GPIO_A), &mRead);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");        
@@ -184,7 +184,7 @@ void PPort::write(unsigned char cByte){
 
     mWrite = cByte;
     
-    int retval = rc_i2c_write_byte(mBus, MCP23017Reg::GPIO_B, &mWrite);
+    int retval = rc_i2c_write_byte(mBus, (unsigned char)(MCP23017Reg::GPIO_B), &mWrite);
 
     if(retval == PP_ERROR){
         mPPd.throwError(PPDERR_FATAL_IO, "I2C IO Error!");
@@ -217,6 +217,3 @@ void PPort::changeMode(int cMode){
 
     setMode(cMode);
 }
-
-
-#endif
