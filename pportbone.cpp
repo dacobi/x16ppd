@@ -1,7 +1,7 @@
 #include "x16ppd.h"
 #include "pportbone.h"
 
-#ifdef __arm__
+#ifndef NONE
     #include <rc/i2c.h>
     #include <rc/gpio.h>
 #else
